@@ -50,7 +50,7 @@ public class CharSequenceUtils {
      * @param cs  the specified subsequence, null returns null
      * @param start  the start index, inclusive, valid
      * @return a new subsequence, may be null
-     * @throws IndexOutOfBoundsException if {@code start} is negative or if 
+     * @throws IndexOutOfBoundsException if {@code start} is negative or if
      *  {@code start} is greater than {@code length()}
      */
     public static CharSequence subSequence(final CharSequence cs, final int start) {
@@ -224,6 +224,30 @@ public class CharSequenceUtils {
             }
         }
 
+        return true;
+    }
+
+    static boolean equals(final CharSequence cs1, final CharSequence cs2) {
+        if (cs1 == null && cs2 == null) {
+          return true;
+        }
+        if (cs1 == null || cs2 == null) {
+          return false;
+        }
+        if (cs1 instanceof String && cs2 instanceof String) {
+          return ((String) cs1).equals((String) cs2);
+        }
+        if (cs1.length() != cs2.length()) {
+          return false;
+        }
+
+        for (int i = 0; i < cs1.length(); i++) {
+          final char c1 = cs1.charAt(i);
+          final char c2 = cs2.charAt(i);
+          if (c1 != c2) {
+            return false;
+          }
+        }
         return true;
     }
 }

@@ -23,6 +23,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.lang.CharBuffer;
+import java.lang.Segment;
+import java.lang.StringBuffer;
+import java.lang.StringBuilder;
 
 import org.junit.Assert;
 
@@ -43,7 +47,7 @@ public class CharSequenceUtilsTest {
         assertTrue(Modifier.isPublic(CharSequenceUtils.class.getModifiers()));
         assertFalse(Modifier.isFinal(CharSequenceUtils.class.getModifiers()));
     }
-    
+
     //-----------------------------------------------------------------------
     @Test
     public void testSubSequence() {
@@ -137,9 +141,9 @@ public class CharSequenceUtilsTest {
     };
 
     private static abstract class RunTest {
-        
+
         abstract boolean invoke();
-        
+
         void run(TestData data, String id) {
             if (data.throwable != null) {
                 try {
@@ -152,10 +156,10 @@ public class CharSequenceUtilsTest {
                 }
             } else {
                 boolean stringCheck = invoke();
-                Assert.assertEquals(id + " Failed test " + data, data.expected, stringCheck);                
+                Assert.assertEquals(id + " Failed test " + data, data.expected, stringCheck);
             }
         }
-        
+
     }
 
     @Test
@@ -164,22 +168,39 @@ public class CharSequenceUtilsTest {
             new RunTest() {
                 @Override
                 boolean invoke() {
-                    return data.source.regionMatches(data.ignoreCase, data.toffset, data.other, data.ooffset, data.len);                        
+                    return data.source.regionMatches(data.ignoreCase, data.toffset, data.other, data.ooffset, data.len);
                 }
             }.run(data, "String");
             new RunTest() {
                 @Override
                 boolean invoke() {
-                    return CharSequenceUtils.regionMatches(data.source, data.ignoreCase, data.toffset, data.other, data.ooffset, data.len);                        
+                    return CharSequenceUtils.regionMatches(data.source, data.ignoreCase, data.toffset, data.other, data.ooffset, data.len);
                 }
             }.run(data, "CSString");
             new RunTest() {
                 @Override
                 boolean invoke() {
-                    return CharSequenceUtils.regionMatches(new StringBuilder(data.source), data.ignoreCase, data.toffset, data.other, data.ooffset, data.len);             
+                    return CharSequenceUtils.regionMatches(new StringBuilder(data.source), data.ignoreCase, data.toffset, data.other, data.ooffset, data.len);
                 }
             }.run(data, "CSNonString");
         }
     }
 
+    //-----------------------------------------------------------------------
+    @Test
+    public void testEquals() {
+      assertTrue(CharSequenceUtils.equals(null, null));
+      assertFalse(CharSequenceUtils.equals("Abcd", null));
+      assertTrue(CharSequenceUtils.equals("Abcd", "Abcd"));
+      assertFalse(CharSequenceUtils.equals("Abcd", "abcd"));
+      assertFalse(CharSequenceUtils.equals("Abcd", "Abcde"));
+      assertFalse(CharSequenceUtils.equals(new StringBuffer("Abcd"), new StringBuffer("Abcde")));
+      assertTrue(CharSequenceUtils.equals(new StringBuffer("Abcd"), new StringBuffer("Abcd")));
+      assertFalse(CharSequenceUtils.equals(new Segment("Abcd"), new Segment("Abcde")));
+      assertTrue(CharSequenceUtils.equals(new Segment("Abcd"), new Segment("Abcd")));
+      assertFalse(CharSequenceUtils.equals(new CharBuffer("Abcd"), new CharBuffer("Abcde")));
+      assertTrue(CharSequenceUtils.equals(new CharBuffer("Abcd"), new CharBuffer("Abcd")));
+      assertFalse(CharSequenceUtils.equals(new StringBuilder("Abcd"), new StringBuilder("Abcde")));
+      assertTrue(CharSequenceUtils.equals(new StringBuilder("Abcd"), new StringBuilder("Abcd")));
+    }
 }
